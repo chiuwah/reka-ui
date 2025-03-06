@@ -119,6 +119,16 @@ async function handleSelect(ev: SelectEvent<T>) {
     return
 
   rootContext.onSelect(props.value)
+  if (props.level > 1 && Array.isArray(rootContext.modelValue.value)) {
+    const allItems = rootContext.expandedItems.value;
+    const currentItem = allItems.find(item => rootContext.getKey(item.value) === rootContext.getKey(props.value));
+    if (currentItem?.parentItem) {
+      const parentKey = rootContext.getKey(currentItem.parentItem);
+      if (!rootContext.modelValue.value.some(v => rootContext.getKey(v) === parentKey)) {
+        rootContext.modelValue.value = [...rootContext.modelValue.value, currentItem.parentItem];
+      }
+    }
+  }
 }
 async function handleToggle(ev: ToggleEvent<T>) {
   emits('toggle', ev)
